@@ -458,12 +458,22 @@ class SocialMediaApp {
                 },
                 {
                     id: Date.now() - 1800000,
-                    author: 'Shahzaib Ali Abbasi',
+                    author: 'Muzammil Qurban',
                     text: ' Like, edit, delete, search, and filter posts. Dark mode is available too!',
                     image: 'https://resizer.mail.ru/p/7d71d79f-413d-5d14-9cf5-3e7054edccd3/AQABtQN6Z62XEJ7nWFXkDJhp2M-xCTNhobZqjJpdjay5uLDUj_B8cO7VJrLtTwk4q2xp46oyZNJ6VpalxxSsTdebXZM.jpg',
                     likes: 63,
                     liked: false,
                     timestamp: new Date(Date.now() - 1800000),
+                    reactions: {}
+                },
+                {
+                    id: Date.now() - 3800000,
+                    author: 'Ak',
+                    text: 'Welcome to SocialHub!',
+                    image: 'https://img.freepik.com/free-photo/photorealistic-wintertime-scene-with-people-snowboarding_23-2151472636.jpg?semt=ais_hybrid&w=740&q=80',
+                    likes: 68,
+                    liked: false,
+                    timestamp: new Date(Date.now() - 3800000),
                     reactions: {}
                 }
             ];
