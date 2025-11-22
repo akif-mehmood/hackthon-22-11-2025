@@ -3,9 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Social Media App</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
+    <!-- Login/Signup Screen -->
+    <div id="auth-container" class="auth-screen active">
+        <div class="auth-wrapper">
+            <div class="auth-header">
+                <h1>SocialHub</h1>
+                <p>Share Your Thoughts & Connect</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active">
+                <h2>Welcome Back!</h2>
+                <div class="form-group">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="login-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+                <p class="toggle-form">Don't have an account? <span id="toggle-signup">Sign Up</span></p>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form" class="auth-form">
+                <h2>Join SocialHub!</h2>
+                <div class="form-group">
+                    <input type="text" id="signup-name" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="signup-email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="signup-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign Up</button>
+                <p class="toggle-form">Already have an account? <span id="toggle-login">Login</span></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Feed Screen -->
+    <div id="feed-container" class="feed-screen">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="logo">✨ SocialHub</h1>
+            </div>
+            <div class="header-right">
+                <span id="welcome-user" class="welcome-text">Welcome, User</span>
+                <button id="theme-toggle" class="theme-btn" title="Toggle Dark Mode">🌙</button>
+                <button id="logout-btn" class="btn-logout">Logout</button>
+            </div>
+        </header>
+
+        <main class="feed-main">
+            <!-- Create Post Section -->
+            <section class="create-post-section">
+                <div class="post-creator">
+                    <div class="creator-header">
+                        <span class="avatar">👤</span>
+                        <textarea id="post-text" placeholder="What's on your mind?" rows="3"></textarea>
+                    </div>
+                    <div class="creator-actions">
+                        <input type="text" id="post-image" placeholder="Add image URL (optional)">
+                        <div class="emoji-picker">
+                            <span class="emoji-btn" data-emoji="😀">😀</span>
+                            <span class="emoji-btn" data-emoji="❤️">❤️</span>
+                            <span class="emoji-btn" data-emoji="😂">😂</span>
+                            <span class="emoji-btn" data-emoji="🔥">🔥</span>
+                            <span class="emoji-btn" data-emoji="💯">💯</span>
+                        </div>
+                        <button id="post-btn" class="btn-post">Post</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search & Filter Section -->
+            <section class="controls-section">
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder=" Search posts...">
+                </div>
+                <div class="filter-controls">
+                    <button class="filter-btn active" data-filter="latest">Latest First</button>
+                    <button class="filter-btn" data-filter="oldest">Oldest First</button>
+                    <button class="filter-btn" data-filter="popular">Most Liked</button>
+                    <button class="filter-btn" data-filter="trending">Trending</button>
+                </div>
+            </section>
+
+            <!-- Posts Feed -->
+            <section id="posts-feed" class="posts-feed">
+                <div class="empty-state">
+                    <p> No posts yet. Be the first to share!</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Edit Post Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Post</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="edit-text" rows="4"></textarea>
+                <input type="text" id="edit-image" placeholder="Image URL">
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-edit" class="btn-secondary">Cancel</button>
+                <button id="save-edit" class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
