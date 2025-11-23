@@ -72,7 +72,6 @@ class SocialMediaApp {
             return;
         }
 
-        // Simulate login
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const user = users.find(u => u.email === email && u.password === password);
 
@@ -103,7 +102,6 @@ class SocialMediaApp {
             return;
         }
 
-        // Store user
         let users = JSON.parse(localStorage.getItem('users')) || [];
         if (users.find(u => u.email === email)) {
             alert('Email already registered!');
@@ -114,7 +112,7 @@ class SocialMediaApp {
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
 
-        alert('✅ Signup successful! Please login.');
+        alert('Signup successful! Please login.');
         this.toggleAuthForm();
         this.clearAuthForms();
     }
@@ -172,6 +170,7 @@ class SocialMediaApp {
         const post = {
             id: Date.now(),
             author: this.currentUser.name,
+            authorId: this.currentUser.id, // 🔥 ADDED FOR SECURITY
             text,
             image: imageUrl,
             likes: 0,
@@ -184,19 +183,22 @@ class SocialMediaApp {
         this.saveToStorage();
         this.renderFeed();
 
-        // Clear inputs
         document.getElementById('post-text').value = '';
         document.getElementById('post-image').value = '';
-
-        console.log('[v0] Post created successfully');
     }
 
     deletePost(postId) {
+        const post = this.posts.find(p => p.id === postId);
+
+        if (post.authorId !== this.currentUser.id) {
+            alert("❌ You cannot delete someone else's post!");
+            return;
+        }
+
         if (confirm('Are you sure you want to delete this post?')) {
             this.posts = this.posts.filter(p => p.id !== postId);
             this.saveToStorage();
             this.renderFeed();
-            console.log('[v0] Post deleted:', postId);
         }
     }
 
@@ -214,6 +216,12 @@ class SocialMediaApp {
         const post = this.posts.find(p => p.id === postId);
         if (!post) return;
 
+        // 🚫 SECURITY CHECK
+        if (post.authorId !== this.currentUser.id) {
+            alert("❌ You cannot edit someone else's post!");
+            return;
+        }
+
         this.editingPostId = postId;
         document.getElementById('edit-text').value = post.text;
         document.getElementById('edit-image').value = post.image;
@@ -229,6 +237,12 @@ class SocialMediaApp {
         const post = this.posts.find(p => p.id === this.editingPostId);
         if (!post) return;
 
+        // 🚫 SECURITY CHECK
+        if (post.authorId !== this.currentUser.id) {
+            alert("❌ Not allowed to edit this post!");
+            return;
+        }
+
         const newText = document.getElementById('edit-text').value.trim();
         if (!newText) {
             alert('Post cannot be empty!');
@@ -240,7 +254,6 @@ class SocialMediaApp {
         this.saveToStorage();
         this.renderFeed();
         this.closeEditModal();
-        console.log('[v0] Post updated:', this.editingPostId);
     }
 
     // ==================== SEARCH & FILTER ====================
@@ -258,7 +271,6 @@ class SocialMediaApp {
     getFilteredAndSortedPosts(searchQuery = '') {
         let filtered = this.posts;
 
-        // Search filter
         if (searchQuery) {
             filtered = filtered.filter(p =>
                 p.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -266,7 +278,6 @@ class SocialMediaApp {
             );
         }
 
-        // Sorting
         const sorted = [...filtered];
         switch (this.currentFilter) {
             case 'latest':
@@ -279,7 +290,6 @@ class SocialMediaApp {
                 sorted.sort((a, b) => b.likes - a.likes);
                 break;
             case 'trending':
-                // Posts with likes from today
                 sorted.sort((a, b) => {
                     const today = new Date().toDateString();
                     const aToday = new Date(a.timestamp).toDateString() === today ? 1 : 0;
@@ -304,7 +314,6 @@ class SocialMediaApp {
 
         feed.innerHTML = posts.map(post => this.createPostHTML(post)).join('');
 
-        // Attach event listeners
         posts.forEach(post => {
             const likeBtn = document.querySelector(`[data-post-id="${post.id}"] .like-btn`);
             const deleteBtn = document.querySelector(`[data-post-id="${post.id}"] .delete-btn`);
@@ -317,10 +326,10 @@ class SocialMediaApp {
     }
 
     createPostHTML(post) {
-    const timeAgo = this.getTimeAgo(post.timestamp);
-    const liked = post.liked ? 'liked' : '';
+        const timeAgo = this.getTimeAgo(post.timestamp);
+        const liked = post.liked ? 'liked' : '';
 
-    return `
+        return `
         <div class="post-card" data-post-id="${post.id}">
             <div class="post-header">
                 <div class="post-user">
@@ -330,7 +339,6 @@ class SocialMediaApp {
                         <span class="post-time">${timeAgo}</span>
                     </div>
                 </div>
-                <button class="post-menu">⋮</button>
             </div>
 
             <div class="post-content">
@@ -339,32 +347,17 @@ class SocialMediaApp {
             </div>
 
             <div class="post-actions">
+                <button class="action-btn like-btn ${liked}">
+                    ❤️ <span>${post.likes}</span>
+                </button>
 
-                <!-- Reaction Wrapper + Popup -->
-                <div class="reaction-wrapper">
-                    <button class="action-btn like-btn ${liked}" title="Like">
-                        ❤️ <span>${post.likes}</span>
-                    </button>
-
-                    <div class="reaction-popup">
-                        <span class="reaction" data-react="like">👍</span>
-                        <span class="reaction" data-react="love">❤️</span>
-                        <span class="reaction" data-react="haha">😆</span>
-                        <span class="reaction" data-react="wow">😮</span>
-                        <span class="reaction" data-react="sad">😢</span>
-                        <span class="reaction" data-react="angry">😡</span>
-                    </div>
-                </div>
-
-                <button class="action-btn edit-btn" title="Edit">✏️ Edit</button>
-                <button class="action-btn delete-btn" title="Delete">🗑️ Delete</button>
+                ${post.authorId === this.currentUser.id ? `
+                    <button class="action-btn edit-btn">✏️ Edit</button>
+                    <button class="action-btn delete-btn">🗑️ Delete</button>
+                ` : ''}
             </div>
-            <div class="post-reaction-counts">
-            ${this.renderReactionCounts(post.reactions)}
-            </div>
-        </div>
-    `;
-}
+        </div>`;
+    }
 
     getTimeAgo(timestamp) {
         const now = new Date();
@@ -382,33 +375,11 @@ class SocialMediaApp {
         return postTime.toLocaleDateString();
     }
 
-
-
     escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
-
-     renderReactionCounts(reactions) {
-    if (!reactions) return "";
-
-    const icons = {
-        like: "👍",
-        love: "❤️",
-        haha: "😆",
-        wow: "😮",
-        sad: "😢",
-        angry: "😡"
-    };
-
-    return Object.entries(reactions)
-        .filter(([type, count]) => count > 0)
-        .map(([type, count]) => `
-            <span class="reaction-count-item">${icons[type]} ${count}</span>
-        `)
-        .join(" ");
-}
 
     // ==================== THEME ====================
     toggleTheme() {
@@ -432,7 +403,25 @@ class SocialMediaApp {
     }
 
     // ==================== STORAGE ====================
-    saveToStorage() {
+//     saveToStorage() {
+//         localStorage.setItem('socialmedia_posts', JSON.stringify(this.posts));
+//     }
+
+//     loadFromStorage() {
+//         const saved = localStorage.getItem('socialmedia_posts');
+//         if (saved) {
+//             this.posts = JSON.parse(saved).map(p => ({
+//                 ...p,
+//                 timestamp: new Date(p.timestamp)
+//             }));
+//         } else {
+//             this.posts = [];
+//             this.saveToStorage();
+//         }
+//     }
+// }
+
+saveToStorage() {
         localStorage.setItem('socialmedia_posts', JSON.stringify(this.posts));
     }
 
@@ -483,10 +472,10 @@ class SocialMediaApp {
 
 }
 
-// Reaction popup event
+
+// Reaction popup
 document.addEventListener("click", (e) => {
     if (e.target.classList.contains("reaction")) {
-
         const reaction = e.target.dataset.react;
         const postCard = e.target.closest(".post-card");
         const postId = Number(postCard.dataset.postId);
@@ -502,9 +491,9 @@ document.addEventListener("click", (e) => {
     }
 });
 
-
 // ==================== INITIALIZATION ====================
 const app = new SocialMediaApp();
+
 
 
 // Demo login credentials
